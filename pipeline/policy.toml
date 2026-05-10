@@ -1,0 +1,99 @@
+# policy.toml — single source of truth for "what makes a decl mech-safe to
+# privatize". Read by:
+#   - experiments/hide-decls/rerank_lean.py
+#   - experiments/hide-decls/dashboard/build_dashboard.py (`explain_decl`)
+#   - experiments/hide-decls/pr1/iterate_bundle.sh (apply-private heredoc)
+#
+# Edit this file and re-run any of the above; you should never need to touch
+# the consumers themselves to add or remove a forbidden attribute or name
+# pattern. The census (DeclCensus.lean) is the layer below: it produces
+# raw structural signals (kind, attributes, name_pattern, n_external_users,
+# …) and this file is the policy that combines them.
+
+# ---------------------------------------------------------------------------
+# Hard blocks — every consumer refuses these decls.
+# ---------------------------------------------------------------------------
+
+[hard_blocks]
+
+# Kinds that are never auto-hidable. `structure`/`class` privatize their
+# constructors and accessors implicitly, which is rarely what we want.
+# `ctor`/`rec`/`quot` are auto-synthesized; their visibility tracks the
+# parent.
+never_hide_kinds = ["structure", "inductive", "class", "ctor", "rec", "quot"]
+
+# Attributes whose presence means `private` is semantically wrong, even if
+# `lake build` accepts the change. Census output's `forbidden_attrs` field
+# already filters to this set; if you add a new attribute here, also add
+# detection in `getForbiddenAttrs` in DeclCensus.lean (next census run).
+forbidden_attrs = [
+  "reducible",            # explicit signal: downstream should unfold transparently
+  "implicit_reducible",   # same; even more emphatic
+  "inline",               # compile-time hint for cross-module callers
+  "deprecated",           # active migration window for external users
+]
+
+# Build-rejected attributes — Lean refuses `private @[simp]`, `private @[ext]`,
+# etc. with a clear error. The iterator's apply-private heredoc handles these
+# at file-edit time before invoking lake. Listed here for documentation +
+# future census use; not currently consulted by the rerank.
+build_rejected_attrs = [
+  "simp", "ext", "norm_cast", "gcongr", "mono", "positivity",
+  "norm_num", "fun_prop", "instance", "coe", "simps", "simps!",
+]
+
+# `name_pattern` values from the census that should be refused.
+#  - `simps_projection`: namespace ends in `.Simps`. Consumed by `@[simps]`-
+#    derived lemmas in arbitrary downstream modules; the `Expr.foldConsts`
+#    reference graph cannot see these uses (meta-time name lookups). Caused
+#    8 of 11 build-failures in the 2026-05-07 100-commit demo run.
+forbidden_name_patterns = ["simps_projection"]
+
+# Module path prefixes for tier-1 candidates to skip (pre-filter before apply).
+# Decls under these paths are dominated by extension-registered helpers and
+# auto-derived mechanisms that will revert during iterate-and-revert, producing
+# ~25% noise without yield. Filtering them upstream avoids churn.
+forbidden_module_prefixes = [
+  "Mathlib.Tactic.",
+  "Mathlib.Meta.",
+  "Mathlib.Lean.",
+]
+
+# Auto-synthesized name patterns — these decls inherit visibility from
+# their parent and aren't directly privatizable.
+auto_synth_suffixes = [
+  ".ctorIdx", ".recOn", ".casesOn", ".brecOn", ".below", ".rec",
+  ".noConfusion", ".noConfusionType",
+  ".sizeOf", "._sizeOf_inst",
+  ".mk.injEq", ".mk.sizeOf_spec", ".elim",
+]
+auto_synth_inner = [
+  ".mk.noConfusion", ".match_", ".proof_",
+  "._eq_", "._proof_", "._unsafe_rec",
+]
+
+# ---------------------------------------------------------------------------
+# Tier definitions — combinations of signals that promote candidates.
+# ---------------------------------------------------------------------------
+
+[tier_1]
+# "Mechanically safe" — no external users, no intra-module references,
+# kind in {def, abbrev} OR (theorem with internal name pattern + no docstring).
+require = "n_external_users == 0 AND n_intra_module_refs == 0"
+intent_safe_kinds = ["def", "abbrev"]
+# For theorems/lemmas: require non-normal name pattern AND no docstring.
+intent_safe_theorem_patterns = ["underscore_prefix", "aux", "internal_namespace"]
+
+[tier_2]
+# Bundle policy: roll all tier-1 candidates in a module into a single PR.
+inherit_from = "tier_1"
+group_by = "module"
+min_bundle_size = 3
+cap_per_bundle = 80
+
+[tier_3]
+# Encapsulation hub candidates (PR-38702 shape): heavily intra-referenced
+# defs with few external users; would need sub-module extraction to privatize.
+require_kind = ["def", "abbrev"]
+min_signature_refs = 5
+max_external_users = 30

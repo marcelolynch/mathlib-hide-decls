@@ -1,0 +1,452 @@
+{
+  "schema": "churn_blast/v1",
+  "n_commits_walked": 1500,
+  "n_commits_with_changes": 1413,
+  "graph": {
+    "nodes": 8355,
+    "cp_s": 740.821
+  },
+  "per_commit": {
+    "n_modules_edited_pct": {
+      "min": 1,
+      "p25": 1,
+      "p50": 2,
+      "p75": 4,
+      "p90": 8,
+      "p95": 14,
+      "p99": 133,
+      "max": 1100,
+      "mean": 6.714083510261855
+    },
+    "blast_share_pct": {
+      "min": 0.00011968880909634949,
+      "p25": 0.0017953321364452424,
+      "p50": 0.06343506882106523,
+      "p75": 0.3348892878515859,
+      "p90": 0.7712746858168761,
+      "p95": 0.8824655894673848,
+      "p99": 0.9522441651705565,
+      "max": 0.9565529622980251,
+      "mean": 0.21883900161067427
+    },
+    "blast_cp_share_pct": {
+      "min": 0.003779590481371343,
+      "p25": 0.050619515375509065,
+      "p50": 0.38281852161318325,
+      "p75": 0.7052985808987596,
+      "p90": 0.868360913095066,
+      "p95": 0.9416579713588032,
+      "p99": 0.9691625912332399,
+      "max": 0.9773373055029487,
+      "mean": 0.3927328104573118
+    }
+  },
+  "namespace_churn": [
+    {
+      "namespace": "Mathlib.Algebra",
+      "commits": 279,
+      "share_of_commits": 0.19745222929936307,
+      "avg_blast_share": 0.35835344234023797,
+      "median_blast_share": 0.34446439257929384
+    },
+    {
+      "namespace": "Mathlib.Analysis",
+      "commits": 227,
+      "share_of_commits": 0.16065109695682944,
+      "avg_blast_share": 0.20228305085192594,
+      "median_blast_share": 0.06499102333931778
+    },
+    {
+      "namespace": "Mathlib.Topology",
+      "commits": 215,
+      "share_of_commits": 0.1521585279547063,
+      "avg_blast_share": 0.3094857556399872,
+      "median_blast_share": 0.2241771394374626
+    },
+    {
+      "namespace": "Mathlib.RingTheory",
+      "commits": 201,
+      "share_of_commits": 0.14225053078556263,
+      "avg_blast_share": 0.25301261496229205,
+      "median_blast_share": 0.13859964093357272
+    },
+    {
+      "namespace": "Mathlib",
+      "commits": 181,
+      "share_of_commits": 0.12809624911535739,
+      "avg_blast_share": 0.12551586868616735,
+      "median_blast_share": 0.004069419509275883
+    },
+    {
+      "namespace": "Mathlib.Data",
+      "commits": 156,
+      "share_of_commits": 0.11040339702760085,
+      "avg_blast_share": 0.5209777655020025,
+      "median_blast_share": 0.566128067025733
+    },
+    {
+      "namespace": "Mathlib.CategoryTheory",
+      "commits": 153,
+      "share_of_commits": 0.10828025477707007,
+      "avg_blast_share": 0.2689509236768715,
+      "median_blast_share": 0.12459605026929982
+    },
+    {
+      "namespace": "Mathlib.Order",
+      "commits": 151,
+      "share_of_commits": 0.10686482661004953,
+      "avg_blast_share": 0.5673725135838872,
+      "median_blast_share": 0.60754039497307
+    },
+    {
+      "namespace": "Mathlib.LinearAlgebra",
+      "commits": 139,
+      "share_of_commits": 0.0983722576079264,
+      "avg_blast_share": 0.31912911322647447,
+      "median_blast_share": 0.23590664272890485
+    },
+    {
+      "namespace": "Mathlib.NumberTheory",
+      "commits": 132,
+      "share_of_commits": 0.09341825902335456,
+      "avg_blast_share": 0.2479036323740094,
+      "median_blast_share": 0.047995212447636146
+    },
+    {
+      "namespace": "Mathlib.Tactic",
+      "commits": 122,
+      "share_of_commits": 0.08634111818825195,
+      "avg_blast_share": 0.6360312368170625,
+      "median_blast_share": 0.8423698384201077
+    },
+    {
+      "namespace": "Mathlib.Combinatorics",
+      "commits": 100,
+      "share_of_commits": 0.07077140835102619,
+      "avg_blast_share": 0.2971897067624177,
+      "median_blast_share": 0.009216038300418911
+    },
+    {
+      "namespace": "Mathlib.MeasureTheory",
+      "commits": 95,
+      "share_of_commits": 0.06723283793347487,
+      "avg_blast_share": 0.295521748716495,
+      "median_blast_share": 0.08605625374027528
+    },
+    {
+      "namespace": "Mathlib.GroupTheory",
+      "commits": 85,
+      "share_of_commits": 0.060155697098372256,
+      "avg_blast_share": 0.4739944379906361,
+      "median_blast_share": 0.4824655894673848
+    },
+    {
+      "namespace": "Mathlib.SetTheory",
+      "commits": 83,
+      "share_of_commits": 0.05874026893135174,
+      "avg_blast_share": 0.36078100553019976,
+      "median_blast_share": 0.23542788749251944
+    },
+    {
+      "namespace": "Mathlib.Geometry",
+      "commits": 72,
+      "share_of_commits": 0.050955414012738856,
+      "avg_blast_share": 0.3888689407540395,
+      "median_blast_share": 0.41340514661879113
+    },
+    {
+      "namespace": "Mathlib.AlgebraicTopology",
+      "commits": 69,
+      "share_of_commits": 0.04883227176220807,
+      "avg_blast_share": 0.26142984761359594,
+      "median_blast_share": 0.04236983842010772
+    },
+    {
+      "namespace": "Mathlib.Probability",
+      "commits": 59,
+      "share_of_commits": 0.04175513092710545,
+      "avg_blast_share": 0.3818559879905466,
+      "median_blast_share": 0.24392579293836025
+    },
+    {
+      "namespace": "Mathlib.FieldTheory",
+      "commits": 51,
+      "share_of_commits": 0.036093418259023353,
+      "avg_blast_share": 0.4262306239072529,
+      "median_blast_share": 0.45074805505685217
+    },
+    {
+      "namespace": "Mathlib.AlgebraicGeometry",
+      "commits": 50,
+      "share_of_commits": 0.035385704175513094,
+      "avg_blast_share": 0.37888928785158593,
+      "median_blast_share": 0.30771992818671456
+    },
+    {
+      "namespace": "Mathlib.RepresentationTheory",
+      "commits": 35,
+      "share_of_commits": 0.024769992922859165,
+      "avg_blast_share": 0.3450388988629563,
+      "median_blast_share": 0.23794135248354278
+    },
+    {
+      "namespace": "Mathlib.Logic",
+      "commits": 31,
+      "share_of_commits": 0.021939136588818117,
+      "avg_blast_share": 0.7597884210729522,
+      "median_blast_share": 0.9086774386594854
+    },
+    {
+      "namespace": "Mathlib.Computability",
+      "commits": 28,
+      "share_of_commits": 0.019815994338287332,
+      "avg_blast_share": 0.44269043344447295,
+      "median_blast_share": 0.5500897666068223
+    },
+    {
+      "namespace": "Mathlib.ModelTheory",
+      "commits": 24,
+      "share_of_commits": 0.016985138004246284,
+      "avg_blast_share": 0.4928735288250548,
+      "median_blast_share": 0.5959305804907241
+    },
+    {
+      "namespace": "Mathlib.Dynamics",
+      "commits": 12,
+      "share_of_commits": 0.008492569002123142,
+      "avg_blast_share": 0.6686714542190305,
+      "median_blast_share": 0.8289646918013166
+    },
+    {
+      "namespace": "Mathlib.Condensed",
+      "commits": 12,
+      "share_of_commits": 0.008492569002123142,
+      "avg_blast_share": 0.39059445441851187,
+      "median_blast_share": 0.24584081388390186
+    },
+    {
+      "namespace": "Mathlib.Control",
+      "commits": 10,
+      "share_of_commits": 0.007077140835102618,
+      "avg_blast_share": 0.4166487133453022,
+      "median_blast_share": 0.45792938360263313
+    },
+    {
+      "namespace": "Mathlib.Util",
+      "commits": 8,
+      "share_of_commits": 0.005661712668082095,
+      "avg_blast_share": 0.7944195092758827,
+      "median_blast_share": 0.8896469180131658
+    },
+    {
+      "namespace": "Mathlib.Lean",
+      "commits": 7,
+      "share_of_commits": 0.004953998584571833,
+      "avg_blast_share": 0.7603488073865093,
+      "median_blast_share": 0.8435667265110712
+    },
+    {
+      "namespace": "Mathlib.InformationTheory",
+      "commits": 6,
+      "share_of_commits": 0.004246284501061571,
+      "avg_blast_share": 0.36106124077398766,
+      "median_blast_share": 0.49012567324955114
+    },
+    {
+      "namespace": "Mathlib.Init",
+      "commits": 3,
+      "share_of_commits": 0.0021231422505307855,
+      "avg_blast_share": 0.9522441651705565,
+      "median_blast_share": 0.9522441651705565
+    },
+    {
+      "namespace": "Mathlib.Testing",
+      "commits": 1,
+      "share_of_commits": 0.0007077140835102619,
+      "avg_blast_share": 0.9564332734889288,
+      "median_blast_share": 0.9564332734889288
+    }
+  ],
+  "top_leverage": [
+    {
+      "module": "Mathlib.SetTheory.Cardinal.Cofinality",
+      "edits": 25,
+      "blast_cp_s": 376.8,
+      "leverage": 9420.0
+    },
+    {
+      "module": "Mathlib.SetTheory.Ordinal.Basic",
+      "edits": 20,
+      "blast_cp_s": 399.7,
+      "leverage": 7994.0
+    },
+    {
+      "module": "Mathlib.Tactic.Translate.Core",
+      "edits": 10,
+      "blast_cp_s": 713.83,
+      "leverage": 7138.3
+    },
+    {
+      "module": "Mathlib.Data.List.Basic",
+      "edits": 9,
+      "blast_cp_s": 669.7,
+      "leverage": 6027.3
+    },
+    {
+      "module": "Mathlib.Tactic.Translate.ToDual",
+      "edits": 8,
+      "blast_cp_s": 707.815,
+      "leverage": 5662.52
+    },
+    {
+      "module": "Mathlib.SetTheory.Ordinal.Family",
+      "edits": 14,
+      "blast_cp_s": 389.8,
+      "leverage": 5457.2
+    },
+    {
+      "module": "Mathlib.Order.Cover",
+      "edits": 9,
+      "blast_cp_s": 598.4,
+      "leverage": 5385.599999999999
+    },
+    {
+      "module": "Mathlib.SetTheory.Ordinal.Arithmetic",
+      "edits": 13,
+      "blast_cp_s": 394.5,
+      "leverage": 5128.5
+    },
+    {
+      "module": "Mathlib.Logic.Basic",
+      "edits": 7,
+      "blast_cp_s": 705.219,
+      "leverage": 4936.533
+    },
+    {
+      "module": "Mathlib.Data.NNReal.Defs",
+      "edits": 9,
+      "blast_cp_s": 533.5,
+      "leverage": 4801.5
+    },
+    {
+      "module": "Mathlib.Algebra.Group.Subgroup.Defs",
+      "edits": 8,
+      "blast_cp_s": 592.9,
+      "leverage": 4743.2
+    },
+    {
+      "module": "Mathlib.Order.SuccPred.Limit",
+      "edits": 9,
+      "blast_cp_s": 515.2,
+      "leverage": 4636.8
+    },
+    {
+      "module": "Mathlib.Order.Lattice",
+      "edits": 6,
+      "blast_cp_s": 687.3,
+      "leverage": 4123.799999999999
+    },
+    {
+      "module": "Mathlib.Order.Hom.Basic",
+      "edits": 6,
+      "blast_cp_s": 658.7,
+      "leverage": 3952.2000000000003
+    },
+    {
+      "module": "Mathlib.Data.Set.Function",
+      "edits": 6,
+      "blast_cp_s": 654.1,
+      "leverage": 3924.6000000000004
+    },
+    {
+      "module": "Mathlib.SetTheory.Cardinal.Order",
+      "edits": 8,
+      "blast_cp_s": 486.8,
+      "leverage": 3894.4
+    },
+    {
+      "module": "Mathlib.SetTheory.Cardinal.Basic",
+      "edits": 8,
+      "blast_cp_s": 484.8,
+      "leverage": 3878.4
+    },
+    {
+      "module": "Mathlib.Order.CompleteLattice.Basic",
+      "edits": 6,
+      "blast_cp_s": 643.3,
+      "leverage": 3859.7999999999997
+    },
+    {
+      "module": "Mathlib.Order.CompleteBooleanAlgebra",
+      "edits": 6,
+      "blast_cp_s": 635.0,
+      "leverage": 3810.0
+    },
+    {
+      "module": "Mathlib.SetTheory.Cardinal.Arithmetic",
+      "edits": 10,
+      "blast_cp_s": 379.9,
+      "leverage": 3799.0
+    },
+    {
+      "module": "Mathlib.SetTheory.Cardinal.Regular",
+      "edits": 10,
+      "blast_cp_s": 372.5,
+      "leverage": 3725.0
+    },
+    {
+      "module": "Mathlib.Order.ConditionallyCompleteLattice.Basic",
+      "edits": 6,
+      "blast_cp_s": 614.9,
+      "leverage": 3689.3999999999996
+    },
+    {
+      "module": "Mathlib.Algebra.MvPolynomial.Basic",
+      "edits": 10,
+      "blast_cp_s": 364.9,
+      "leverage": 3649.0
+    },
+    {
+      "module": "Mathlib.Topology.Maps.Basic",
+      "edits": 6,
+      "blast_cp_s": 597.4,
+      "leverage": 3584.3999999999996
+    },
+    {
+      "module": "Mathlib.Order.ConditionallyCompleteLattice.Indexed",
+      "edits": 6,
+      "blast_cp_s": 593.1,
+      "leverage": 3558.6000000000004
+    },
+    {
+      "module": "Mathlib.Logic.Function.Defs",
+      "edits": 5,
+      "blast_cp_s": 704.305,
+      "leverage": 3521.5249999999996
+    },
+    {
+      "module": "Mathlib.Order.OrderDual",
+      "edits": 5,
+      "blast_cp_s": 694.9,
+      "leverage": 3474.5
+    },
+    {
+      "module": "Mathlib.Algebra.Ring.Subring.Basic",
+      "edits": 6,
+      "blast_cp_s": 550.9,
+      "leverage": 3305.3999999999996
+    },
+    {
+      "module": "Mathlib.Topology.Connected.Clopen",
+      "edits": 6,
+      "blast_cp_s": 550.4,
+      "leverage": 3302.3999999999996
+    },
+    {
+      "module": "Mathlib.Algebra.MonoidAlgebra.Defs",
+      "edits": 7,
+      "blast_cp_s": 466.5,
+      "leverage": 3265.5
+    }
+  ]
+}
