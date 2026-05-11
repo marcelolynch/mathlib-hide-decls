@@ -140,18 +140,18 @@ expensive.
 
 The dashboard cites mathlib4 PR
 [#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
-as the canonical worked example of sub-module encapsulation. The
-pipeline finds 1 of its 40 privatized decls (`Real.mk`, as Tier 3).
-The remaining 39 fall in four buckets — strict-intra-module-refs
-gate, theorem-intent gate, n_signature_refs threshold, external-user
-gate. [`pr-38702-trace.md`](pr-38702-trace.md) has the per-decl table.
+as the canonical worked example of sub-module encapsulation. The PR
+privatizes 40 decls organised around 4 hubs. The pipeline surfaces
+1 hub (`Real.mk`) as Tier 3 and reaches 12 of the 40 decls through
+its Co-located column. 24 more are present in the census but
+unreachable because their hub is filtered out by `@[reducible]`,
+`kind=ctor`, or the `n_sig_refs < 5` threshold. The 3 remaining decls
+don't fit the hub model (they're bridging lemmas referenced via proof
+bodies only); 1 decl is invisible to the meta-program.
 
-The pipeline is intentionally more conservative than the human author
-of PR 38702. The Tier-1 gate refuses decls with intra-module
-references because privatizing one of them in isolation would break
-the others; PR 38702 sidesteps this by moving the whole cluster into
-a private-imported sub-module. The pipeline does not yet perform
-cluster-aware tiering.
+[`pr-38702-trace.md`](pr-38702-trace.md) has the per-decl table and
+identifies three concrete policy refinements that would raise
+coverage from 12 to 35+.
 
 ## Live numbers
 
