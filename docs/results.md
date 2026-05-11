@@ -136,6 +136,23 @@ the editing frequency over the window. Modules edited only once in
 the window contribute zero to the estimate even if their cascade is
 expensive.
 
+## Calibration against PR 38702
+
+The dashboard cites mathlib4 PR
+[#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
+as the canonical worked example of sub-module encapsulation. The
+pipeline finds 1 of its 40 privatized decls (`Real.mk`, as Tier 3).
+The remaining 39 fall in four buckets — strict-intra-module-refs
+gate, theorem-intent gate, n_signature_refs threshold, external-user
+gate. [`pr-38702-trace.md`](pr-38702-trace.md) has the per-decl table.
+
+The pipeline is intentionally more conservative than the human author
+of PR 38702. The Tier-1 gate refuses decls with intra-module
+references because privatizing one of them in isolation would break
+the others; PR 38702 sidesteps this by moving the whole cluster into
+a private-imported sub-module. The pipeline does not yet perform
+cluster-aware tiering.
+
 ## Live numbers
 
 Current candidate counts and per-snapshot transitions live in the

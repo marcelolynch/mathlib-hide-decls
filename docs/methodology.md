@@ -100,3 +100,14 @@ The apply/revert primitives are unit-tested under `pipeline/tests/`:
   preceding-line attribute scanner in `policy.parse_attrs`.
 - `test_revert_parser.py` — 12 fixtures for the build-log error
   parser in `bulk_revert.parse_errors`.
+
+## 7. Calibration against PR 38702
+
+[`pr-38702-trace.md`](pr-38702-trace.md) records the per-decl
+behaviour of the policy + tiering against mathlib4 PR
+[#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
+(`chore(Data/Real): encapsulate real numbers`). Of the 40 decls the
+PR privatizes, the pipeline surfaces 1 as Tier 3 (`Real.mk`). The
+trace documents which filter excludes each of the other 39 and
+quantifies the gap between the policy as written and the human
+author's judgment.

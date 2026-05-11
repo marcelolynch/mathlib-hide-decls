@@ -88,6 +88,9 @@ bash pipeline/scripts/iterate_bundle.sh Mathlib.Tactic.Ring.Basic
   heuristic, the policy hierarchy, and the per-module scoring formula.
 - [`docs/results.md`](docs/results.md): outcomes of running the
   pipeline against current mathlib.
+- [`docs/pr-38702-trace.md`](docs/pr-38702-trace.md): per-decl trace
+  showing which of PR 38702's 40 privatized declarations the
+  pipeline surfaces and why the others do not.
 - [`docs/cache-cut-empirics.md`](docs/cache-cut-empirics.md): an
   empirical hash-table demonstrating the cache-cut on
   `Mathlib.Data.TwoPointing`.
@@ -105,6 +108,7 @@ mathlib-hide-decls/
 │   ├── design.md            pipeline design rationale
 │   ├── methodology.md       selection + scoring
 │   ├── results.md           current results
+│   ├── pr-38702-trace.md    per-decl trace against PR 38702
 │   └── cache-cut-empirics.md   empirical demonstration
 ├── census/                  standalone Lean project
 │   ├── README.md
