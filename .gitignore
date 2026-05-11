@@ -30,3 +30,6 @@ data/snapshots/*
 # Decompressed data (we ship the .gz; users decompress on demand)
 data/census_lean.jsonl
 data/ranked_candidates.jsonl
+
+# Auto-generated summary doc (regenerable from rerank.py)
+data/RANKED_SUMMARY.md
