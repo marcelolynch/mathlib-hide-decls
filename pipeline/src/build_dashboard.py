@@ -1150,7 +1150,9 @@ Each row groups all tier-1 candidates in that module. Score combines blast-cone 
 <div class="section hidden" id="section-tier3">
 <h2>Tier-3 sub-module encapsulation candidates ({len(tier3)})</h2>
 {render_tier3_intro()}
-{render_tier3_table(tier3, top30, state_decls)}
+<p class='hint'>Showing top 1,000 of {len(tier3):,} by score. The full
+list is in <code>data/ranked_candidates.jsonl.gz</code>.</p>
+{render_tier3_table(tier3[:1000], top30, state_decls)}
 </div>
 
 <div class="section hidden" id="section-excluded">
