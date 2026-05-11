@@ -180,7 +180,7 @@ def explain_decl(r: dict, top30: set[str]) -> tuple[str, list[str], list[str]]:
     n_sig = r.get("n_signature_refs", 0)
 
     # ---- Tier-3 hub candidate? ----
-    if kind in {"def", "abbrev"} and n_sig >= 5 and n_ext <= 30:
+    if kind in {"def", "abbrev", "ctor"} and n_sig >= 2 and n_ext <= 30:
         pos.append(f"Hub-shaped: <b>{n_sig}</b> same-module decls reference it in their type.")
         if n_ext == 0:
             pos.append("<b>0 external users</b>: self-contained cluster.")
@@ -221,7 +221,7 @@ def explain_decl(r: dict, top30: set[str]) -> tuple[str, list[str], list[str]]:
         if n_sig > 0:
             neg.append(f"<b>{n_sig}</b> signature ref(s); used in the type of same-module decls.")
         # If we already classified as tier-3 hub, keep that
-        if kind in {"def", "abbrev"} and n_sig >= 5 and n_ext <= 30:
+        if kind in {"def", "abbrev", "ctor"} and n_sig >= 2 and n_ext <= 30:
             verdict = "tier3"
         else:
             verdict = "blocked-noncandidate"
@@ -484,10 +484,11 @@ tabs match the tiers.</p>
     </tr>
     <tr>
       <td><span class="tag tier3">Tier&nbsp;3</span></td>
-      <td><b>One row = one decl.</b> A def whose type is referenced by ≥ 5
-          decls in the same module, with ≤ 30 external users.
-          Action: move the hub and its dependents into a sub-module that
-          the parent imports privately.</td>
+      <td><b>One row = one decl.</b> A def, abbrev, or structure
+          constructor whose type is referenced by ≥ 2 decls in the
+          same module, with ≤ 30 external users. Action: move the hub
+          and its dependents into a sub-module that the parent imports
+          privately.</td>
       <td class="num"><b>{t3:,}</b></td>
       <td><i>Tier&nbsp;3 — Encapsulation candidates</i> tab.</td>
     </tr>
@@ -604,7 +605,7 @@ external-user count.</p>
     </tr>
     <tr>
       <td><span class="tag tier3">Tier&nbsp;3</span></td>
-      <td><code>kind ∈ {def, abbrev}</code>, <code>n_signature_refs ≥ 5</code>, <code>n_external_users ≤ 30</code>.</td>
+      <td><code>kind ∈ {def, abbrev, ctor}</code>, <code>n_signature_refs ≥ 2</code>, <code>n_external_users ≤ 30</code>.</td>
       <td>Move the hub and its in-signature dependents into a
           sub-namespace that the parent imports privately. Worked example:
           <a href="https://github.com/leanprover-community/mathlib4/pull/38702">mathlib4 #38702</a>.</td>
@@ -822,12 +823,16 @@ references can.</p>
   <thead><tr><th>Filter</th><th>Threshold</th><th>Reason</th></tr></thead>
   <tbody>
     <tr><td><code>kind</code></td>
-        <td><code>def</code> or <code>abbrev</code></td>
+        <td><code>def</code>, <code>abbrev</code>, or <code>ctor</code></td>
         <td>Theorem/lemma decls are facts; the encapsulation pattern
-            applies to constructive definitions.</td></tr>
+            applies to constructive definitions and to structure
+            constructors that serve as the canonical access point for a
+            type.</td></tr>
     <tr><td><code>n_signature_refs</code></td>
-        <td><b>≥ 5</b></td>
-        <td>Smaller clusters do not warrant a sub-module split.</td></tr>
+        <td><b>≥ 2</b></td>
+        <td>A cluster of just the hub and one dependent is the
+            minimum that benefits from a sub-module split. Lower-score
+            hubs sort to the bottom of the Tier-3 list.</td></tr>
     <tr><td><code>n_external_users</code></td>
         <td><b>≤ 30</b></td>
         <td>Each external consumer must add a <code>public import</code>

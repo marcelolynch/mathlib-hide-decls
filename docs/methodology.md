@@ -107,9 +107,9 @@ The apply/revert primitives are unit-tested under `pipeline/tests/`:
 behaviour against mathlib4 PR
 [#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
 (`chore(Data/Real): encapsulate real numbers`). The PR privatizes 40
-decls organised around 4 hubs. The pipeline surfaces 1 hub
-(`Real.mk`) as Tier 3, reaching 12 of the 40 decls through its
-Co-located column. The other 28 are blocked by either the theorem-
-intent gate or a hub-level filter (`@[reducible]`, `kind=ctor`,
-or the `n_sig_refs < 5` threshold). The trace identifies four
-concrete refinements that would raise coverage from 12 to 35+.
+decls organised around 4 hubs. The pipeline surfaces 3 hubs
+(`Real.mk`, `Real.ofCauchy`, `Real.equivCauchy`) as Tier 3, reaching
+**24 of the 40 decls**. The remaining 16 break down: 13 anchored to
+`Real.cauchy` which is hub-shaped but blocked by `@[reducible]`, 2
+bridging lemmas with no structural hub, and 1 elaborated away before
+the meta-program runs.

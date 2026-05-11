@@ -116,17 +116,23 @@ def is_mech_hidable(r: dict) -> bool:
 
 
 def is_encap_hub_candidate(r: dict) -> bool:
-    """A hub-shaped candidate for the PR-38702 refactor pattern.
+    """A hub-shaped candidate for the sub-module encapsulation pattern.
 
-    - Type-shaped (def/abbrev/structure)
-    - Many intra-module siblings reference it in their signature (cluster precondition)
-    - External users are bounded (refactor cost is finite)
-    - No forbidden attributes (those decls are author-marked as transparent
-      to the elaborator and not suitable for visibility tightening)
+    Membership rules:
+      - Type-shaped: `def`, `abbrev`, or `ctor` (structure constructors are
+        load-bearing hubs in the same way defs are; the iterate-revert loop
+        catches any case where a constructor isn't actually privatizable).
+      - At least 2 same-module decls reference it in their type signature
+        (a "cluster" of just the hub itself isn't worth a sub-module split).
+        Score-based sort separates small hubs from large ones.
+      - External users bounded: at most 30 cross-module consumers (any more
+        and the sub-module's public-import burden outweighs the cache-cut
+        benefit).
+      - No forbidden attributes.
     """
     if r["is_private"]:
         return False
-    if r["kind"] not in ("def", "abbrev"):
+    if r["kind"] not in ("def", "abbrev", "ctor"):
         return False
     if is_synthesized_aux(r["fq_name"]):
         return False
@@ -134,7 +140,7 @@ def is_encap_hub_candidate(r: dict) -> bool:
         return False
     n_sig = r.get("n_signature_refs", 0)
     n_ext = r.get("n_external_users", 0)
-    return n_sig >= 5 and n_ext <= 30
+    return n_sig >= 2 and n_ext <= 30
 
 
 def main():
@@ -230,7 +236,7 @@ def main():
             * (1.0 / (1.0 + r["n_external_users"]))  # fewer ext users = easier refactor
         )
     tier3_hubs.sort(key=lambda r: -r["_score"])
-    print(f"\ntier 3 (encap hubs — def with n_sig_refs≥5, ≤30 ext): {len(tier3_hubs):,}")
+    print(f"\ntier 3 (encap hubs: def/abbrev/ctor with n_sig_refs≥2, ≤30 ext): {len(tier3_hubs):,}")
 
     # ---- Write output ----
     OUT_JSONL.parent.mkdir(parents=True, exist_ok=True)

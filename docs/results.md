@@ -12,7 +12,7 @@ build → revert → amend until convergence.
 | Mathlib declarations scanned | 349,712 |
 | Tier-1 candidates (current ranking) | **8,124** |
 | Tier-2 module bundles (current ranking) | **718** |
-| Tier-3 hub candidates (current ranking) | 12,382 |
+| Tier-3 hub candidates (current ranking) | **25,418** |
 
 The numbers below are from the last full bulk-pipeline run, which used
 the previous Tier-1 rule (`n_intra_module_refs == 0`, 4,269 candidates).
@@ -153,17 +153,15 @@ expensive.
 The dashboard cites mathlib4 PR
 [#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
 as the canonical worked example of sub-module encapsulation. The PR
-privatizes 40 decls organised around 4 hubs. The pipeline surfaces 1
-hub (`Real.mk`) as Tier 3 and reaches 12 of the 40 decls through its
-Co-located column. The remaining 28 are blocked by either the
-theorem-intent gate (their `name_pattern=normal` makes them
-indistinguishable from public API in isolation) or a hub-level filter
-(`@[reducible]` on `Real.cauchy`, `kind=ctor` on `Real.ofCauchy`,
-`n_sig_refs < 5` on `Real.equivCauchy`).
+privatizes 40 decls organised around 4 hubs. The pipeline surfaces 3
+hubs (`Real.mk`, `Real.ofCauchy`, `Real.equivCauchy`) as Tier 3,
+reaching **24 of 40** decls through their Co-located columns. The
+remaining 16 are 13 anchored to `Real.cauchy` (blocked by
+`@[reducible]`), 2 bridging lemmas with no structural hub, and 1
+elaborated away before the meta-program sees it.
 
 [`pr-38702-trace.md`](pr-38702-trace.md) has the per-decl table and
-identifies four concrete refinements that would raise coverage from
-12 to 35+.
+the history of how coverage has changed across ranker iterations.
 
 ## Live numbers
 
