@@ -95,9 +95,24 @@ def is_forbidden_module(module: str) -> bool:
 
 
 def is_mech_hidable(r: dict) -> bool:
+    """A decl is mechanically hidable iff no public-surface name resolution
+    would break from privatizing it.
+
+    Resolution shapes that matter:
+      - External users (`n_external_users == 0`): any cross-module reference
+        breaks because the importing module never had visibility.
+      - Same-module signature references (`n_signature_refs == 0`): a
+        public theorem whose *type* mentions the decl exposes the
+        now-private name to downstream importers via its statement.
+
+    Same-module *body* references (intra-module-refs minus signature-refs)
+    do not constrain privatization: Lean 4 keeps private decls visible
+    inside their defining module, so proofs that reference the decl
+    continue to type-check after the visibility flip.
+    """
     return (not r["is_private"]
             and r.get("n_external_users", 0) == 0
-            and r.get("n_intra_module_refs", 0) == 0)
+            and r.get("n_signature_refs", 0) == 0)
 
 
 def is_encap_hub_candidate(r: dict) -> bool:

@@ -191,8 +191,18 @@ def explain_decl(r: dict, top30: set[str]) -> tuple[str, list[str], list[str]]:
         # Could also be tier-1; check below
 
     # ---- Tier-1 candidate? (mech-hidable + intent-safe) ----
-    if n_ext == 0 and n_intra == 0:
-        pos.append("<b>0 external users</b>, <b>0 intra-module refs</b>: mechanically safe.")
+    # Mech-hidable: n_external_users == 0 AND n_signature_refs == 0.
+    # Body refs (n_intra_module_refs - n_signature_refs) do not constrain
+    # privatization because private decls remain visible inside their
+    # defining module, so proofs that reference the hub continue to type-check.
+    if n_ext == 0 and n_sig == 0:
+        body_refs = n_intra
+        if body_refs == 0:
+            pos.append("<b>0 external users</b>, <b>0 intra-module refs</b>: mechanically safe.")
+        else:
+            pos.append(f"<b>0 external users</b>, <b>0 signature refs</b>"
+                       f" ({body_refs} body ref{'s' if body_refs != 1 else ''}, "
+                       f"which don't constrain privatization): mechanically safe.")
         if kind in {"def", "abbrev"}:
             pos.append(f"<code>kind={kind}</code>: defs and abbrevs hide freely.")
             verdict = "tier1"
@@ -208,8 +218,8 @@ def explain_decl(r: dict, top30: set[str]) -> tuple[str, list[str], list[str]]:
     else:
         if n_ext > 0:
             neg.append(f"<b>{n_ext}</b> external user(s); privatize would break downstream.")
-        if n_intra > 0:
-            neg.append(f"<b>{n_intra}</b> intra-module reference(s); used inside same module.")
+        if n_sig > 0:
+            neg.append(f"<b>{n_sig}</b> signature ref(s); used in the type of same-module decls.")
         # If we already classified as tier-3 hub, keep that
         if kind in {"def", "abbrev"} and n_sig >= 5 and n_ext <= 30:
             verdict = "tier3"
@@ -581,8 +591,10 @@ external-user count.</p>
   <tbody>
     <tr>
       <td><span class="tag tier1">Tier&nbsp;1</span></td>
-      <td><code>n_external_users == 0</code>, <code>n_intra_module_refs == 0</code>,
-          intent-safe, policy-clean.</td>
+      <td><code>n_external_users == 0</code>, <code>n_signature_refs == 0</code>,
+          intent-safe, policy-clean. Body refs in the same module are
+          allowed: private decls remain visible inside the defining module
+          so proofs continue to type-check.</td>
       <td>One <code>private</code> edit per decl.</td>
     </tr>
     <tr>

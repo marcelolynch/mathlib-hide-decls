@@ -48,7 +48,7 @@ public theorem).
 
 | tier | membership | unit of action |
 |---|---|---|
-| **Tier 1** | `n_external_users == 0`, `n_intra_module_refs == 0`, intent-safe, policy-clean. | One `private` edit per decl. |
+| **Tier 1** | `n_external_users == 0`, `n_signature_refs == 0`, intent-safe, policy-clean. Body refs in the same module are allowed (private decls remain visible inside the defining module, so proofs continue to type-check). | One `private` edit per decl. |
 | **Tier 2** | Modules with ≥ 3 Tier-1 decls (grouped by `defining_module`). | One PR per module. |
 | **Tier 3** | `kind ∈ {def, abbrev}`, `n_signature_refs ≥ 5`, `n_external_users ≤ 30`. | Move the hub and its in-signature dependents into a sub-namespace that the parent imports privately. |
 
@@ -107,10 +107,9 @@ The apply/revert primitives are unit-tested under `pipeline/tests/`:
 behaviour against mathlib4 PR
 [#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
 (`chore(Data/Real): encapsulate real numbers`). The PR privatizes 40
-decls organised around 4 hubs (`Real.mk`, `Real.cauchy`,
-`Real.ofCauchy`, `Real.equivCauchy`). The pipeline surfaces 1 hub
-(`Real.mk`) as Tier 3, which reaches 12 of the 40 decls through its
-Co-located column. 24 more are present in the data but unreachable
-because their hub is filtered out (by `@[reducible]`, `kind=ctor`, or
-the `n_sig_refs < 5` threshold). The trace identifies three concrete
-policy refinements that would raise coverage from 12 to 35+.
+decls organised around 4 hubs. The pipeline surfaces 1 hub
+(`Real.mk`) as Tier 3, reaching 12 of the 40 decls through its
+Co-located column. The other 28 are blocked by either the theorem-
+intent gate or a hub-level filter (`@[reducible]`, `kind=ctor`,
+or the `n_sig_refs < 5` threshold). The trace identifies four
+concrete refinements that would raise coverage from 12 to 35+.

@@ -10,7 +10,19 @@ build → revert → amend until convergence.
 | metric | value |
 |---|---:|
 | Mathlib declarations scanned | 349,712 |
-| Tier-1 candidates (post-policy) | 4,269 |
+| Tier-1 candidates (current ranking) | **8,124** |
+| Tier-2 module bundles (current ranking) | **718** |
+| Tier-3 hub candidates (current ranking) | 12,382 |
+
+The numbers below are from the last full bulk-pipeline run, which used
+the previous Tier-1 rule (`n_intra_module_refs == 0`, 4,269 candidates).
+The refined rule (`n_signature_refs == 0`, 8,124 candidates) has not
+been validated end-to-end yet; the next run will produce updated
+retention figures.
+
+| metric (previous run) | value |
+|---|---:|
+| Tier-1 candidates at the time | 4,269 |
 | Mechanically applicable to a `def`/`theorem`/`lemma` line | 2,148 |
 | Files touched by the initial commit | 953 |
 | Reverts applied during iteration | ~555 |
@@ -141,17 +153,17 @@ expensive.
 The dashboard cites mathlib4 PR
 [#38702](https://github.com/leanprover-community/mathlib4/pull/38702)
 as the canonical worked example of sub-module encapsulation. The PR
-privatizes 40 decls organised around 4 hubs. The pipeline surfaces
-1 hub (`Real.mk`) as Tier 3 and reaches 12 of the 40 decls through
-its Co-located column. 24 more are present in the census but
-unreachable because their hub is filtered out by `@[reducible]`,
-`kind=ctor`, or the `n_sig_refs < 5` threshold. The 3 remaining decls
-don't fit the hub model (they're bridging lemmas referenced via proof
-bodies only); 1 decl is invisible to the meta-program.
+privatizes 40 decls organised around 4 hubs. The pipeline surfaces 1
+hub (`Real.mk`) as Tier 3 and reaches 12 of the 40 decls through its
+Co-located column. The remaining 28 are blocked by either the
+theorem-intent gate (their `name_pattern=normal` makes them
+indistinguishable from public API in isolation) or a hub-level filter
+(`@[reducible]` on `Real.cauchy`, `kind=ctor` on `Real.ofCauchy`,
+`n_sig_refs < 5` on `Real.equivCauchy`).
 
 [`pr-38702-trace.md`](pr-38702-trace.md) has the per-decl table and
-identifies three concrete policy refinements that would raise
-coverage from 12 to 35+.
+identifies four concrete refinements that would raise coverage from
+12 to 35+.
 
 ## Live numbers
 
