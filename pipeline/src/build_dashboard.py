@@ -1150,7 +1150,7 @@ Each row groups all tier-1 candidates in that module. Score combines blast-cone 
 <div class="section hidden" id="section-tier3">
 <h2>Tier-3 sub-module encapsulation candidates ({len(tier3)})</h2>
 {render_tier3_intro()}
-{render_tier3_table(tier3[:200], top30, state_decls)}
+{render_tier3_table(tier3, top30, state_decls)}
 </div>
 
 <div class="section hidden" id="section-excluded">
