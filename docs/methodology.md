@@ -70,7 +70,14 @@ Per-tier scoring:
 
 - **Tier 1**: each decl inherits its module's `score(m)`.
 - **Tier 2**: bundle score is `score(m)` weighted by `n_decls`.
-- **Tier 3**: `bcp × n_signature_refs`.
+- **Tier 3**: `log(1+bcp) × n_signature_refs × 1/(1+n_external_users)`.
+  Module weight uses `log1p(bcp)` rather than the saturation form used by
+  tiers 1 and 2. Saturation maxes out at ~1.0 by `bcp ≈ 500`; above that
+  floor (≈99% of mathlib) it stops discriminating, leaving only cluster
+  shape to rank hubs and burying small-but-high-leverage clusters in deep
+  modules. `log1p` compresses the 100× bcp spread to ~5×, comparable in
+  magnitude to `n_signature_refs` (2–50) and `1/(1+n_external_users)`
+  (0.03–1), so all three signals stay visible.
 
 ## 5. T30: top-30 leverage list
 

@@ -647,7 +647,12 @@ score(m) = (1 − exp(−bcp / 100))    × (3 if T30 else 1)    × (1 + log(1+ed
   <li><b>Tier 1</b>: each decl inherits its module's <code>score(m)</code>.</li>
   <li><b>Tier 2</b>: bundle score is <code>score(m)</code> weighted by
       <code>n_decls</code>.</li>
-  <li><b>Tier 3</b>: <code>bcp × n_signature_refs</code>.</li>
+  <li><b>Tier 3</b>: <code>log(1+bcp) × n_signature_refs × 1/(1+n_external_users)</code>.
+      The module weight uses <code>log1p</code> rather than the saturation
+      form, so it stays comparable in magnitude to the structural terms;
+      saturation would compress mathlib's bcp spread into an above/below
+      gate and let cluster shape alone discriminate, burying
+      small-but-high-leverage hubs.</li>
 </ul>
 
 <h3>5. Top-30 leverage list (T30)</h3>

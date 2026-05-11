@@ -227,9 +227,18 @@ def main():
     print(f"  total decls bundled: {total_bundled:,}")
 
     # ---- Tier 3: encapsulation hubs ----
+    # Module weight enters as log(1+bcp) rather than the tier-1/2 saturation
+    # form. Saturation maxes out at ~1.0 by bcp≈500, so for the ~99% of
+    # mathlib above that floor, "where am I" stops discriminating and only
+    # cluster shape ranks hubs — burying small-but-high-leverage clusters
+    # (e.g. PR-38702's Real.equivCauchy: n_sig=2 in a bcp≈8.7k module).
+    # log1p compresses the 100× bcp spread to ~5×, comparable in magnitude
+    # to n_sig (2-50) and 1/(1+n_ext) (0.03-1), so all three signals stay
+    # visible. Raw bcp would dominate; log keeps the trade-off balanced.
     tier3_hubs = [r for r in rows if is_encap_hub_candidate(r)]
     for r in tier3_hubs:
-        r["_module_score"] = module_score(r["defining_module"])
+        bcp = blast_cp.get(r["defining_module"], 0.0)
+        r["_module_score"] = math.log1p(bcp)
         r["_score"] = (
             r["_module_score"]
             * r["n_signature_refs"]

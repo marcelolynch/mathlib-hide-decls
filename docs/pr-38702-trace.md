@@ -35,18 +35,24 @@ sub-namespace that the parent imports privately.
 
 PR 38702 follows this pattern. Four hubs anchor its 40 privatizations:
 
-| hub | kind | `n_sig_refs` | dashboard status | PR theorems in co-located list |
-|---|---|---:|---|---:|
-| `Real.mk` | `def` | 26 | **Tier 3** | 11 |
-| `Real.ofCauchy` | `ctor` | 52 | **Tier 3** | 11 |
-| `Real.equivCauchy` | `def` | 2 | **Tier 3** (hub itself) | 0 |
-| `Real.cauchy` | `def` | 17 | blocked: `@[reducible]` in `forbidden_attrs` | 13 (unreachable) |
+| hub | kind | `n_sig_refs` | dashboard status | Tier-3 rank (of 25,418) | PR theorems in co-located list |
+|---|---|---:|---|---:|---:|
+| `Real.mk` | `def` | 26 | **Tier 3** | 445 | 11 |
+| `Real.ofCauchy` | `ctor` | 52 | **Tier 3** | **83** | 11 |
+| `Real.equivCauchy` | `def` | 2 | **Tier 3** (hub itself) | 16,999 | 0 |
+| `Real.cauchy` | `def` | 17 | blocked: `@[reducible]` in `forbidden_attrs` | — | 13 (unreachable) |
 
 Three of the four hubs surface. The fourth (`Real.cauchy`) is
 hub-shaped but carries the `@[reducible]` attribute, which
 `policy.toml` rejects because privatizing a `@[reducible]` decl
 removes its body from the unfolding path for cross-module callers,
 defeating the attribute's purpose.
+
+`Real.ofCauchy` and `Real.mk`, the two meaty hubs (n_sig=52 and 26),
+land inside the dashboard's top-1000 cut. `Real.equivCauchy` is
+hub-shaped (n_sig=2) but its cluster is too thin to compete with
+larger-n_sig hubs at comparable bcp under the current Tier-3 scoring;
+it surfaces as a reachable hub but not on the default top-1000 view.
 
 ## Per-decl trace
 
@@ -103,7 +109,7 @@ reachable as co-located dependents of their hub.
 
 ## History of this trace
 
-The pipeline's coverage of PR 38702 has improved across two
+The pipeline's coverage of PR 38702 has improved across three
 ranker changes:
 
 | ranking | hubs surfaced | coverage |
@@ -111,6 +117,7 @@ ranker changes:
 | initial (May 2026) | `Real.mk` only | 12 / 40 |
 | Tier-1 rule loosened to `n_signature_refs == 0` | `Real.mk` only | 12 / 40 (Tier-1 gate wasn't binding for these decls) |
 | Tier-3 admits `ctor` + threshold `n_sig_refs ≥ 2` | `Real.mk`, `Real.equivCauchy`, `Real.ofCauchy` | **24 / 40** |
+| Tier-3 score uses `log1p(bcp)` instead of the saturation form | same three hubs; `Real.ofCauchy` lifts from below the top-1000 cut to rank 83 | **24 / 40** (coverage unchanged; visibility improved for the meaty hubs) |
 
 The remaining 16 break down: 13 unreachable because their hub
 (`Real.cauchy`) carries `@[reducible]`; 2 are bridging lemmas with no

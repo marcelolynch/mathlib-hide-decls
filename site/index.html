@@ -119,7 +119,7 @@ code { background: #f6f8fa; padding: 1px 4px; border-radius: 3px; font-size: 11p
 <body>
 <header>
   <h1>Mathlib Privatization Candidate Dashboard</h1>
-  <span class="meta">Last updated: 2026-05-11 17:14 UTC</span>
+  <span class="meta">Last updated: 2026-05-11 17:55 UTC</span>
 </header>
 <nav>
   <a class="active" data-section="summary" onclick="showSection('summary')">Summary</a>
@@ -186,7 +186,7 @@ dropped).</p>
 </div>
 </details>
 
-<div class="card-grid"><div class="card"><div class="label">Mathlib decls scanned</div><div class="value">349,712</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">Tier-1 candidates</div><div class="value">8,124</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">Tier-2 bundles</div><div class="value">718</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">Tier-3 encap hubs</div><div class="value">25,418</div><div class="delta">+13036 since last run</div></div><div class="card"><div class="label">New since last run</div><div class="value">13,036</div></div><div class="card"><div class="label">Merged (now private)</div><div class="value">0</div></div></div>
+<div class="card-grid"><div class="card"><div class="label">Mathlib decls scanned</div><div class="value">349,712</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">Tier-1 candidates</div><div class="value">8,124</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">Tier-2 bundles</div><div class="value">718</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">Tier-3 encap hubs</div><div class="value">25,418</div><div class="delta">+0 since last run</div></div><div class="card"><div class="label">New since last run</div><div class="value">0</div></div><div class="card"><div class="label">Merged (now private)</div><div class="value">0</div></div></div>
 <h2>Top 25 module bundles by impact</h2>
 <p class="muted">Modules with mechanically-safe privatization available.
 Each row groups all tier-1 candidates in that module. Score combines blast-cone CP × top-30 multiplier × log(1+edits).</p>
@@ -668,7 +668,12 @@ score(m) = (1 − exp(−bcp / 100))    × (3 if T30 else 1)    × (1 + log(1+ed
   <li><b>Tier 1</b>: each decl inherits its module's <code>score(m)</code>.</li>
   <li><b>Tier 2</b>: bundle score is <code>score(m)</code> weighted by
       <code>n_decls</code>.</li>
-  <li><b>Tier 3</b>: <code>bcp × n_signature_refs</code>.</li>
+  <li><b>Tier 3</b>: <code>log(1+bcp) × n_signature_refs × 1/(1+n_external_users)</code>.
+      The module weight uses <code>log1p</code> rather than the saturation
+      form, so it stays comparable in magnitude to the structural terms;
+      saturation would compress mathlib's bcp spread into an above/below
+      gate and let cluster shape alone discriminate, burying
+      small-but-high-leverage hubs.</li>
 </ul>
 
 <h3>5. Top-30 leverage list (T30)</h3>
@@ -21195,7 +21200,7 @@ equation lemmas) are folded under a nested toggle.</p>
     <th>cum. merged</th>
     <th>w/ <code>@[simps]</code></th>
   </tr></thead>
-  <tbody><tr><td>2026-05-11T17:14:14Z</td><td class='num'>349,712</td><td class='num'>33,542</td><td class='num'>8,124</td><td class='num'>718</td><td class='num'>25,418</td><td class='num'>13,036</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T16:52:48Z</td><td class='num'>349,712</td><td class='num'>20,506</td><td class='num'>8,124</td><td class='num'>718</td><td class='num'>12,382</td><td class='num'>3,855</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T16:11:24Z</td><td class='num'>349,712</td><td class='num'>16,651</td><td class='num'>4,269</td><td class='num'>361</td><td class='num'>12,382</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T16:08:23Z</td><td class='num'>349,712</td><td class='num'>16,651</td><td class='num'>4,269</td><td class='num'>361</td><td class='num'>12,382</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-10T19:18:42Z</td><td class='num'>349,712</td><td class='num'>16,651</td><td class='num'>4,269</td><td class='num'>361</td><td class='num'>12,382</td><td class='num'>16,651</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr></tbody>
+  <tbody><tr><td>2026-05-11T17:55:12Z</td><td class='num'>349,712</td><td class='num'>33,542</td><td class='num'>8,124</td><td class='num'>718</td><td class='num'>25,418</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T17:14:14Z</td><td class='num'>349,712</td><td class='num'>33,542</td><td class='num'>8,124</td><td class='num'>718</td><td class='num'>25,418</td><td class='num'>13,036</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T16:52:48Z</td><td class='num'>349,712</td><td class='num'>20,506</td><td class='num'>8,124</td><td class='num'>718</td><td class='num'>12,382</td><td class='num'>3,855</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T16:11:24Z</td><td class='num'>349,712</td><td class='num'>16,651</td><td class='num'>4,269</td><td class='num'>361</td><td class='num'>12,382</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-11T16:08:23Z</td><td class='num'>349,712</td><td class='num'>16,651</td><td class='num'>4,269</td><td class='num'>361</td><td class='num'>12,382</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2026-05-10T19:18:42Z</td><td class='num'>349,712</td><td class='num'>16,651</td><td class='num'>4,269</td><td class='num'>361</td><td class='num'>12,382</td><td class='num'>16,651</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td></tr></tbody>
 </table>
 
 </div>
