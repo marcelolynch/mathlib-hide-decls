@@ -12,7 +12,7 @@ build → revert → amend until convergence.
 | Mathlib declarations scanned | 349,712 |
 | Tier-1 candidates (current ranking) | **8,124** |
 | Tier-2 module bundles (current ranking) | **718** |
-| Tier-3 hub candidates (current ranking) | **25,418** |
+| Tier-3 hub candidates (post-filters) | **21,988** |
 
 The numbers below are from the last full bulk-pipeline run, which used
 the previous Tier-1 rule (`n_intra_module_refs == 0`, 4,269 candidates).

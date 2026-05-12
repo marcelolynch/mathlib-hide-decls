@@ -30,8 +30,19 @@ The pipeline organises Tier 3 around **hubs**: a `def`, `abbrev`, or
 `ctor` whose type signature is referenced by at least 2 same-module
 decls. Each hub's row expands to a *Co-located decls* column listing
 every same-module decl that references the hub in its type. The
-intended action is to move the hub and every co-located decl into a
-sub-namespace that the parent imports privately.
+intended action is to apply `private` (for theorems / load-bearing
+defs) or `@[no_expose]` (for defs that are dot-projected from same-file
+lemmas) to the hub's internal scaffolding — and, if a specific
+downstream consumer needs the private surface, give that consumer
+`import all` access to the producing module.
+
+The technique split is documented in
+[`methodology.md` §5b](methodology.md#5b-encap-mechanics-in-the-new-lean-4-module-system).
+PR-38702 uses the strict form of this pattern: `private` on the
+constructor / field / lemmas in `Mathlib/Data/Real/Basic.lean`, plus
+a new `Mathlib/Data/Real/Cauchy.lean` consumer that uses
+`import all Mathlib.Data.Real.Basic` to reach the private decls when
+building the public `Real.ringEquivCauchy` bundled wrapper.
 
 PR 38702 follows this pattern. Four hubs anchor its 40 privatizations:
 
