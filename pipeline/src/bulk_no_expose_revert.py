@@ -129,6 +129,9 @@ def revert_entry(entry: dict) -> bool:
     # Find the decl line. Match `(private )? (noncomputable )? (def|theorem|lemma) <FULL_NAME>`
     # where FULL_NAME ends in `.<name>` or `<name>` — handles dotted source forms
     # like `theorem Disjoint.symmDiff_eq_sup` where the manifest only has the leaf.
+    # Sort.lean and similar files reuse the same leaf name across multiple namespaces;
+    # for action=private we specifically want the one currently carrying `private `,
+    # because earlier reverts may have already cleared other occurrences.
     head_re = re.compile(
         r"^(?P<indent>\s*)"
         r"(?P<priv>private\s+)?"
@@ -136,12 +139,38 @@ def revert_entry(entry: dict) -> bool:
         r"(?P<kw>def|theorem|lemma)\s+"
         r"(?P<full>[\w.«»'!?₀₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹]+)"
     )
-    decl_idx = None
+    matches: list[tuple[int, re.Match]] = []
     for i, line in enumerate(lines):
         m = head_re.match(line)
         if m and (m.group("full") == name or m.group("full").endswith("." + name)):
-            decl_idx = i
-            break
+            matches.append((i, m))
+    if not matches:
+        return False
+    # For private actions, prefer the match that still has `private` prefix.
+    # For no_expose actions, prefer the match that has `@[no_expose]` directly above.
+    decl_idx = None
+    decl_match = None
+    if action == "private":
+        for i, m in matches:
+            if m.group("priv"):
+                decl_idx, decl_match = i, m; break
+    else:  # no_expose
+        for i, m in matches:
+            j = i - 1
+            while j >= 0:
+                stripped = lines[j].strip()
+                if "@[no_expose]" in lines[j]:
+                    decl_idx, decl_match = i, m; break
+                if (stripped in {"noncomputable", "partial", "unsafe", "protected"}
+                    or stripped.startswith("@[")
+                    or (stripped.startswith("set_option") and stripped.endswith(" in"))):
+                    j -= 1; continue
+                break
+            if decl_idx is not None:
+                break
+    # Fallback to the first occurrence even if it doesn't match the action.
+    # (Caller-side `manifest[idx] = None` should still happen so the entry
+    # doesn't loop forever.)
     if decl_idx is None:
         return False
 
@@ -237,6 +266,7 @@ def main() -> int:
 
     reverted_log = REVERTED.open("a") if REVERTED.exists() else REVERTED.open("w")
     actually_reverted = 0
+    skipped_stale = 0
     for fpath, idxs in by_file_for_revert.items():
         for idx in idxs:
             m = manifest[idx]
@@ -252,7 +282,15 @@ def main() -> int:
                             and manifest[k_idx]["file"] == m["file"]
                             and manifest[k_idx]["line_inserted_at"] > m["line_inserted_at"]):
                             manifest[k_idx]["line_inserted_at"] -= 1
+            else:
+                # The decl is no longer findable in the file (probably already
+                # reverted in a prior pass under a different name or shifted
+                # off). Still mark it dead so we don't loop forever trying.
+                manifest[idx] = None
+                skipped_stale += 1
     reverted_log.close()
+    if skipped_stale:
+        print(f"stale-marked: {skipped_stale}", file=sys.stderr)
 
     # Also adjust line offsets globally for remaining manifest entries in same files
     # whose line is greater than removed lines.  We did per-file pass above; we
