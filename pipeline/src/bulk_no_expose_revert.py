@@ -85,8 +85,10 @@ def parse_errors(log_text: str) -> tuple[set[str], set[str], list[tuple[str, int
     for m in re.finditer(r"Invalid rewrite argument:.*?but\s+`?(\w+)", log_text):
         decls.add(m.group(1))
 
-    # Unknown constants — sometimes downstream issue
-    for m in re.finditer(r"Unknown constant `([A-Za-z_][\w.]+)`", log_text):
+    # Unknown constants — sometimes downstream issue. The name class includes
+    # apostrophe/prime/superscript chars that mathlib uses; broaden beyond \w.
+    NAME_CLASS = r"[\w.«»'!?₀₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹]+"
+    for m in re.finditer(r"Unknown constant `(" + NAME_CLASS + r")`", log_text):
         nm = m.group(1).split(".")[-1]
         # Filter out built-in / Lean-internal names
         if not nm.startswith("_"):
@@ -124,16 +126,20 @@ def revert_entry(entry: dict) -> bool:
         return False
     lines = path.read_text().splitlines(keepends=True)
 
-    # Find the decl line by name. Match `(private )? (noncomputable )? (def|theorem|lemma) NAME `
-    name_re = re.compile(
+    # Find the decl line. Match `(private )? (noncomputable )? (def|theorem|lemma) <FULL_NAME>`
+    # where FULL_NAME ends in `.<name>` or `<name>` — handles dotted source forms
+    # like `theorem Disjoint.symmDiff_eq_sup` where the manifest only has the leaf.
+    head_re = re.compile(
         r"^(?P<indent>\s*)"
         r"(?P<priv>private\s+)?"
         r"(?:noncomputable\s+|partial\s+|unsafe\s+|protected\s+)*"
-        r"(def|theorem|lemma)\s+" + re.escape(name) + r"\b"
+        r"(?P<kw>def|theorem|lemma)\s+"
+        r"(?P<full>[\w.«»'!?₀₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹]+)"
     )
     decl_idx = None
     for i, line in enumerate(lines):
-        if name_re.match(line):
+        m = head_re.match(line)
+        if m and (m.group("full") == name or m.group("full").endswith("." + name)):
             decl_idx = i
             break
     if decl_idx is None:
@@ -157,11 +163,9 @@ def revert_entry(entry: dict) -> bool:
         return False
     elif action == "private":
         # Strip the `private ` from the decl line.
-        m = name_re.match(lines[decl_idx])
+        m = head_re.match(lines[decl_idx])
         if not m or not m.group("priv"):
             return False
-        # Remove the `private ` token but keep the rest.
-        # Use a regex to drop `private ` from the start (after indent).
         line = lines[decl_idx]
         line = re.sub(r"^(\s*)private\s+", r"\1", line, count=1)
         lines[decl_idx] = line
