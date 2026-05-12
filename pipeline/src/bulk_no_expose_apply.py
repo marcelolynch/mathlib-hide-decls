@@ -307,19 +307,28 @@ def main() -> int:
                 # The original def keyword line moved down by 1.
                 edited_line = j
             else:
-                # Theorem / lemma: prefix `private` on the keyword line itself.
-                # Lean modifier order: any @[…] / set_option-in ABOVE,
-                # then `private`, then `noncomputable`, then the keyword.
-                # Locate the keyword line: it's `line_idx` (the original match),
-                # but if there are `noncomputable`/etc. modifiers in between j..line_idx,
-                # `private` must come BEFORE those modifiers on the keyword line.
-                # We rewrite the def keyword line so it starts with `private`.
+                # Theorem / lemma: prefix `private` on the keyword line itself,
+                # AFTER any inline `@[…]` attribute block(s) and BEFORE the
+                # `theorem`/`lemma` keyword. Lean modifier order requires
+                # attributes → visibility → computability → keyword.
                 kw_line = line_idx
                 kw_text = src[kw_line]
-                kw_indent_match = re.match(r"^(\s*)", kw_text)
-                kw_indent = kw_indent_match.group(1) if kw_indent_match else ""
-                body = kw_text[len(kw_indent):]
-                src[kw_line] = f"{kw_indent}private {body}"
+                # Match: indent + inline @[...] attrs (possibly multiple) + rest
+                inline_re = re.compile(
+                    r"^(?P<indent>\s*)"
+                    r"(?P<attrs>(?:@\[[^\]]*\]\s*)*)"
+                    r"(?P<rest>.*)$", re.DOTALL
+                )
+                im = inline_re.match(kw_text)
+                if im:
+                    src[kw_line] = (im.group("indent") + im.group("attrs")
+                                    + "private " + im.group("rest"))
+                else:
+                    # Fallback: prefix at indent.
+                    kw_indent_match = re.match(r"^(\s*)", kw_text)
+                    kw_indent = kw_indent_match.group(1) if kw_indent_match else ""
+                    body = kw_text[len(kw_indent):]
+                    src[kw_line] = f"{kw_indent}private {body}"
                 insert_line = None  # in-place rewrite, no insertion
                 action = "private"
                 edited_line = kw_line

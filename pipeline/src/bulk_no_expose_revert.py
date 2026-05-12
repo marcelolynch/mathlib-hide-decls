@@ -134,6 +134,7 @@ def revert_entry(entry: dict) -> bool:
     # because earlier reverts may have already cleared other occurrences.
     head_re = re.compile(
         r"^(?P<indent>\s*)"
+        r"(?P<attrs>(?:@\[[^\]]*\]\s*)*)"  # inline @[…] attributes BEFORE `private`
         r"(?P<priv>private\s+)?"
         r"(?:noncomputable\s+|partial\s+|unsafe\s+|protected\s+)*"
         r"(?P<kw>def|theorem|lemma)\s+"
@@ -191,12 +192,15 @@ def revert_entry(entry: dict) -> bool:
             break
         return False
     elif action == "private":
-        # Strip the `private ` from the decl line.
+        # Strip the `private ` token from the decl line, wherever it appears
+        # after the inline attribute prefix.
         m = head_re.match(lines[decl_idx])
         if not m or not m.group("priv"):
             return False
         line = lines[decl_idx]
-        line = re.sub(r"^(\s*)private\s+", r"\1", line, count=1)
+        # Remove the first `private ` token. May appear right after indent
+        # or right after an inline `@[…] ` attribute group.
+        line = re.sub(r"private\s+", "", line, count=1)
         lines[decl_idx] = line
         path.write_text("".join(lines))
         return True
