@@ -35,8 +35,13 @@ import paths  # noqa: E402
 LEAN = paths.CENSUS                  # accepts .gz via paths.open_jsonl
 CHURN = paths.CHURN_BLAST
 GRAPH = paths.DATA / "lakeprof.graph.json"
+MODULE_ATTRS = paths.DATA / "module_attrs.json"  # per-module attribute aggregates
 OUT_JSONL = paths.RANKED_UNCOMPRESSED
 OUT_MD = paths.DATA / "RANKED_SUMMARY.md"
+
+# Tier-3 candidacy thresholds — keep with the membership predicate so the
+# numbers stay co-located with the rationale.
+TIER3_TO_ADDITIVE_THRESHOLD = 0.30  # skip modules where ≥30% of decls carry @[to_additive]
 
 # All policy lives in policy.toml; this module is the loader.
 # To add or remove a forbidden attribute / name pattern, edit policy.toml only.
@@ -235,7 +240,42 @@ def main():
     # log1p compresses the 100× bcp spread to ~5×, comparable in magnitude
     # to n_sig (2-50) and 1/(1+n_ext) (0.03-1), so all three signals stay
     # visible. Raw bcp would dominate; log keeps the trade-off balanced.
-    tier3_hubs = [r for r in rows if is_encap_hub_candidate(r)]
+    #
+    # Candidacy filters applied on top of `is_encap_hub_candidate`:
+    #   A. `@[to_additive]` dominance — modules where ≥30% of decls carry
+    #      the attribute. Privatizing the multiplicative hub leaves the
+    #      additive sibling at the parent namespace; the pattern collapses.
+    #   C. Multi-ctor parent — ctors of inductives with ≥2 constructors are
+    #      diagram-shaped (e.g. `WalkingReflexivePair.{zero, one}`), not
+    #      structure-shaped (e.g. `Real.ofCauchy`, the lone ctor of a
+    #      structure). Only the latter can be moved independently.
+    if MODULE_ATTRS.exists():
+        module_attrs = json.loads(MODULE_ATTRS.read_text())
+    else:
+        print(f"warning: {MODULE_ATTRS.name} not found; "
+              f"tier-3 @[to_additive] filter will be a no-op")
+        module_attrs = {}
+
+    def is_to_additive_dominated(m: str) -> bool:
+        d = module_attrs.get(m)
+        if not d or d.get("n_decls", 0) < 10:
+            return False
+        return d["n_to_additive"] / d["n_decls"] >= TIER3_TO_ADDITIVE_THRESHOLD
+
+    ctors_per_parent: Counter = Counter()
+    for r in rows:
+        if r["kind"] == "ctor":
+            ctors_per_parent[r["fq_name"].rsplit(".", 1)[0]] += 1
+
+    def has_multi_ctor_parent(r: dict) -> bool:
+        if r["kind"] != "ctor":
+            return False
+        return ctors_per_parent.get(r["fq_name"].rsplit(".", 1)[0], 0) >= 2
+
+    tier3_hubs = [r for r in rows
+                  if is_encap_hub_candidate(r)
+                  and not is_to_additive_dominated(r["defining_module"])
+                  and not has_multi_ctor_parent(r)]
     for r in tier3_hubs:
         bcp = blast_cp.get(r["defining_module"], 0.0)
         r["_module_score"] = math.log1p(bcp)

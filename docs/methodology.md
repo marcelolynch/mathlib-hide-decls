@@ -50,7 +50,22 @@ public theorem).
 |---|---|---|
 | **Tier 1** | `n_external_users == 0`, `n_signature_refs == 0`, intent-safe, policy-clean. Body refs in the same module are allowed (private decls remain visible inside the defining module, so proofs continue to type-check). | One `private` edit per decl. |
 | **Tier 2** | Modules with ≥ 3 Tier-1 decls (grouped by `defining_module`). | One PR per module. |
-| **Tier 3** | `kind ∈ {def, abbrev}`, `n_signature_refs ≥ 5`, `n_external_users ≤ 30`. | Move the hub and its in-signature dependents into a sub-namespace that the parent imports privately. |
+| **Tier 3** | `kind ∈ {def, abbrev, ctor}`, `n_signature_refs ≥ 2`, `n_external_users ≤ 30`, **plus** the two empirical filters below. | Move the hub and its in-signature dependents into a sub-namespace that the parent imports privately. |
+
+Tier-3 empirical filters (from validating the top-30 candidates by hand):
+
+- **`@[to_additive]` dominance.** Skip hubs in modules where ≥ 30% of decls
+  carry `@[to_additive]`. Privatizing a multiplicative hub does not
+  privatize the additive sibling generated at the parent namespace, so
+  the encap pattern collapses for these modules. Detected by
+  `pipeline/scripts/scan_module_attrs.py` greping mathlib4 source for
+  `@[to_additive]` per file; aliased to handle `Foo_.lean` → `Foo`
+  module renames.
+- **Multi-ctor parent.** Skip `kind = ctor` hubs whose parent inductive
+  has ≥ 2 constructors (diagram-shaped types like
+  `WalkingReflexivePair.{zero, one}`). Constructors of single-ctor
+  inductives — i.e. `structure` declarations — remain admissible; this
+  preserves `Real.ofCauchy` as a Tier-3 hub.
 
 ## 4. Scoring
 

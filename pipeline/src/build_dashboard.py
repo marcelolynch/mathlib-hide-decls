@@ -605,7 +605,16 @@ external-user count.</p>
     </tr>
     <tr>
       <td><span class="tag tier3">Tier&nbsp;3</span></td>
-      <td><code>kind ∈ {def, abbrev, ctor}</code>, <code>n_signature_refs ≥ 2</code>, <code>n_external_users ≤ 30</code>.</td>
+      <td><code>kind ∈ {def, abbrev, ctor}</code>, <code>n_signature_refs ≥ 2</code>, <code>n_external_users ≤ 30</code>.
+          Plus two empirical filters from hand-validating the top-30 candidates:
+          <ul style="margin-top:0.4em">
+            <li><b>@[to_additive] dominance</b>: skip modules where
+                ≥&nbsp;30% of decls carry the attribute (multiplicative
+                privatization leaves the additive sibling exposed).</li>
+            <li><b>Multi-ctor parent</b>: skip <code>kind=ctor</code>
+                hubs whose parent inductive has ≥&nbsp;2 constructors
+                (diagram-shaped types can't be split per-constructor).</li>
+          </ul></td>
       <td>Move the hub and its in-signature dependents into a
           sub-namespace that the parent imports privately. Worked example:
           <a href="https://github.com/leanprover-community/mathlib4/pull/38702">mathlib4 #38702</a>.</td>
