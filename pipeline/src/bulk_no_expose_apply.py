@@ -63,6 +63,12 @@ DISQUALIFYING_ATTRS = {
     "aesop", "macro", "macro_rules", "tactic", "elab_rules", "term_parser",
     "builtin_simp", "builtin_simp_attr", "builtin_term_parser",
     "to_additive",  # privatizing the multiplicative side would orphan additive sibling
+    "to_dual",      # same generator pattern as to_additive (Order/* uses this)
+    "push", "push_cast",  # extension-registered rewriting hints
+    "mk_iff", "mk_simps", "induction_eliminator", "cases_eliminator",
+    "irreducible", "expose",  # `expose` shouldn't co-occur with no_expose
+    "default_instance", "class_abbrev", "ext_iff", "structure",
+    "norm_num_ext", "norm_cast_ext", "ext_iff",
 }
 
 DEF_LINE_RE = re.compile(
