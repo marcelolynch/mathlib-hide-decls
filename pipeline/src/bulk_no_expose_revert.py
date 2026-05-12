@@ -85,10 +85,14 @@ def parse_errors(log_text: str) -> tuple[set[str], set[str], list[tuple[str, int
     for m in re.finditer(r"Invalid rewrite argument:.*?but\s+`?(\w+)", log_text):
         decls.add(m.group(1))
 
-    # Unknown constants — sometimes downstream issue. The name class includes
-    # apostrophe/prime/superscript chars that mathlib uses; broaden beyond \w.
+    # Unknown constants / identifiers — sometimes downstream issue. The name
+    # class includes apostrophe/prime/superscript chars mathlib uses;
+    # broaden beyond \w.
     NAME_CLASS = r"[\w.«»'!?₀₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹]+"
-    for m in re.finditer(r"Unknown constant `(" + NAME_CLASS + r")`", log_text):
+    for m in re.finditer(
+        r"Unknown (?:constant|identifier) `(" + NAME_CLASS + r")`",
+        log_text,
+    ):
         nm = m.group(1).split(".")[-1]
         # Filter out built-in / Lean-internal names
         if not nm.startswith("_"):
